@@ -1,124 +1,105 @@
 import React, { useRef, useState } from "react";
 import ColorDisplay from "./components/ColorDisplay";
-// import Card from "./components/UI/Card";
+import "./RootStyles.css";
 
-import "./App.css";
-
+let globalIndex;
+let id;
 function App() {
-  const numberVal = useRef();
-  const boxValue = useRef();
-
-  const [play, setPlay] = useState(true);
-  const [colorNow, setColorNow] = useState();
-  const [colorPast, setColorPast] = useState();
-  const [colorChange, setColorChange] = useState();
-  const [activatedRow, setActivatedRow] = useState();
-  const colors = ["Red", "Blue", "Orange", "Black", "Green"];
   const [rows, setRows] = useState([]);
-  const addClickHandler = (props) => {
-    let numberOfRows = numberVal.current.value;
-    let arr = [];
-    for (let i = 0; i < numberOfRows; i++) {
-      arr.push({
-        id: "e" + i + Math.random().toString,
-        timeVal: Math.floor(Math.random() * (2500 + 1 - 100) + 100),
-        color: colors[Math.floor(Math.random() * colors.length)],
-        shade: Math.random().toFixed(1),
-      });
+  const [paused, setPaused] = useState(true);
+  const [currentRow, setCurrentRow] = useState();
+  const [timeNow, setTimeNow] = useState();
+  const [colorBg, setColorBg] = useState();
+  const colorArr = ["Red", "Blue", "Green", "Purple", "Orange", "Yellow"];
+  const inputRef = useRef();
+  const timeRef = useRef();
+  const addClickHandler = (event) => {
+    let n = inputRef.current.value;
+    if (n.trim().length !== 0) {
+      let arr = [];
+      for (let i = 0; i < n; i++) {
+        arr.push({
+          id: "e" + i + Math.random().toString(),
+          time: Math.floor(Math.random() * (250 + 1 - 10) + 10) * 10,
+          color: colorArr[Math.floor(Math.random() * colorArr.length)],
+          shade: Math.random().toFixed(1),
+        });
+      }
+      setRows(arr);
     }
-    setRows(arr);
+    inputRef.current.value = "";
+    setTimeNow();
   };
 
   const playClickHandler = (event) => {
-    let sum = 0;
-    let n;
-    let arr = [];
+    if (paused === true) {
+      setPaused(false);
+      let currentTime, index;
 
-    if (play) {
-      let start = new Date();
-      console.log(start.getTime());
-      for (let i = 0; i < rows.length; i++) {
-        n = start.getTime() + rows[i].timeVal;
-        console.log(n);
-        // sum += rows[i].timeVal;
+      if (+timeRef.current.innerHTML > 0 && globalIndex !== rows.length) {
+        currentTime = +timeRef.current.innerHTML;
+        console.log("This is working");
+        console.log(currentTime);
+      } else currentTime = 0;
 
-        setColorNow((prevState) => rows[i].color);
+      if (!currentRow) {
+        index = 0;
+        setCurrentRow(rows[0]);
+      } else
+        index = rows.findIndex((element) => {
+          return element.id === currentRow.id;
+        });
+      setColorBg(rows[index].color);
+      id = setInterval(() => {
+        currentTime += 10;
+        if (index < rows.length) setTimeNow(currentTime);
+        else return;
+        if (rows[index].time === currentTime) {
+          index++;
+          currentTime = 0;
 
-        // document.body.style.background = `${rows[i].color}`;
-        // boxValue.current.style.background = `${rows[i].color}`;
-        while (start <= n) {
-          console.log(rows[i].color, start, n);
-          if (activatedRow !== rows[i])
-            // document.body.style.background = `${rows[i].color}`;
-            // boxValue.current.style.background = `${rows[i].color}`;
-            setActivatedRow(rows[i]);
-          start++;
+          if (index !== rows.length) {
+            setColorBg(rows[index].color);
+            setCurrentRow(rows[index]);
+          } else {
+            setColorBg("White");
+            console.log(
+              "This seems to be working, currently paused = ",
+              paused
+            );
+            setPaused(true);
+            setCurrentRow();
+            globalIndex = index;
+          }
         }
-        start = new Date(start);
-        // arr.push(n.setMilliseconds(sum));
-      }
-      // console.log(new Date(), arr, arr[0] - new Date());
-      // console.log(n.toString());
-      // if (i === 0) prev = new Date();
-      // else prev = n;
-      // n.setMilliseconds(sum);
-      // while (prev !== n) {
-      //   // document.body.style = `background: ${rows[i]};`;
-      //   document.body.style.background = rows[i];
-      //   let cur = prev.getMilliseconds();
-      //   prev.setMilliseconds(cur++);
-      // }
+      }, 10);
+      console.log("Index = ", index, "Id = ", id);
+    } else {
+      clearInterval(id);
+      setPaused(true);
+      globalIndex = rows.length - 1;
     }
-    // for (let i = 0; i < rows.length; i++) {
-    //   console.log(rows[i].color);
-    //   int = setInterval(
-    //     () => (document.body.style.background = `${rows[i].color}`),
-    //     4000
-    //   );
-    // }
-    // } else clearInterval(int);
-    setPlay(!play);
   };
-
-  // const playClickHandler = (props) => {
-  //   if (play) {
-  //     let start = 0;
-  //     let sum = 0;
-  //     for (let i = 0; i < rows.length; i++) {
-  //       while (sum !== sum + rows[i].timeVal) {
-  //         setColorNow(rows[i].color);
-  //         if (i !== 0) setColorPast(rows[i - 1].color);
-  //         setColorChange(true);
-  //         sum++;
-  //       }
-  //     }
-  //   }
-  //   setPlay(!play);
-  // };
 
   return (
     <>
       <div className="row">
-        <div className="column"></div>
+        <div className="column" style={{ background: `${colorBg}` }}>
+          <div id="box" ref={timeRef}>
+            {timeNow}
+          </div>
+        </div>
         <div className="column">
-          <label htmlFor="InputValue" style={{ margin: "30px 10px 0 25%" }}>
-            {" "}
-            Enter the number of rows you would want to generate:{" "}
+          <label htmlFor="noOfRows" style={{ marginRight: "4px" }}>
+            Enter the number of rows you need :
           </label>
-          <input
-            type="number"
-            step="1"
-            min="1"
-            id="InputValue"
-            style={{ margin: "30px 0 0 0" }}
-            ref={numberVal}
-          />
-          <button type="submit" onClick={addClickHandler}>
+          <input id="noOfRows" type="number" min="1" step="1" ref={inputRef} />
+          <button style={{ marginLeft: "4px" }} onClick={addClickHandler}>
             Add
           </button>
-          <button onClick={playClickHandler}>{play ? "▶️" : "⏸"}</button>
-          {/* <button onClick={playClickHandler}>{play ? "▶️" : "||"}</button> */}
-
+          <button style={{ marginLeft: "4px" }} onClick={playClickHandler}>
+            {paused ? "▶️" : "⏸"}
+          </button>
           <table id="table-styling">
             <thead>
               <tr>
@@ -129,18 +110,16 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              {/* <td>=></td> */}
-              <ColorDisplay items={rows} />
+              <ColorDisplay items={rows} active={currentRow} />
             </tbody>
           </table>
         </div>
-        <div className="column"></div>
+        <div className="column" style={{ background: `${colorBg}` }}>
+          <div id="box" ref={timeRef}>
+            {timeNow}
+          </div>
+        </div>
       </div>
-      <div
-        id="box"
-        ref={boxValue}
-        style={{ background: colorNow !== colorPast ? colorNow : colorPast }}
-      />
     </>
   );
 }

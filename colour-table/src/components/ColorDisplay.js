@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 // import styles from "ColorDisplaymodule.css";
 
 // let start = Date.now();
 const ColorDisplay = (props) => {
-  // const [isActive, setIsActive] = useState(false);
   const colorTable = {
     Red: "255, 0, 0, ",
     Blue: "0, 0, 255, ",
     Orange: "255, 165, 0, ",
-    Black: "0, 0, 0, ",
+    Purple: "160, 32, 240, ",
     Green: "0, 128, 0, ",
+    Yellow: "255, 255, 0, ",
   };
 
   // const stateChangeHandler = (timeVal) => {
@@ -29,20 +29,21 @@ const ColorDisplay = (props) => {
     let shade = item.shade;
     let back = colorTable[color] + shade;
     let result = back.replace('"', "");
-    // key = item.id;
+
     return (
       <tr
         key={item.id}
-        // style={{ background: isActive ? `rgba(${result})` : "white" }}
-        style={{ background: `rgba(${result})` }}
-        // onload="alert('Hello, World!');"
-
-        // onChange={() => stateChangeHandler(item.timeVal)}
-        // style={{ background: `${rgba(colorTable[color] + shade)};` }}
+        style={{
+          background:
+            props.active && props.active.id === item.id
+              ? `rgba(${result})`
+              : // ? // ? `rgba(${result})`
+                // `rgba(${("0,0,0,0".replace('"'), "")})`
+                "white",
+        }}
       >
-        {/* <tr key={item.id} style={{ background: "rgba(255, 0, 255, 0.3);" }}> */}
-        <td></td>
-        <td>{item.timeVal}</td>
+        <td>{props.active && props.active.id === item.id && "=>"}</td>
+        <td>{item.time}</td>
         <td>{item.color}</td>
         <td>{item.shade}</td>
       </tr>

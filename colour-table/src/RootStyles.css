@@ -17,8 +17,8 @@
   float: left;
   /* float: right; */
   width: 33.33%;
-  padding: 10px;
-  height: 948px;
+  padding: 10px 0;
+  /* min-height: 948px; */
 }
 
 .row:after {

@@ -13,9 +13,10 @@ function App() {
   const colorArr = ["Red", "Blue", "Green", "Purple", "Orange", "Yellow"];
   const inputRef = useRef();
   const timeRef = useRef();
+  const [height, setHeight] = useState(948);
   const addClickHandler = (event) => {
     let n = inputRef.current.value;
-    if (n.trim().length !== 0) {
+    if (n.trim().length !== 0 && +n > 0) {
       let arr = [];
       for (let i = 0; i < n; i++) {
         arr.push({
@@ -29,6 +30,11 @@ function App() {
     }
     inputRef.current.value = "";
     setTimeNow();
+    globalIndex = 0;
+    setCurrentRow();
+    setPaused(true);
+    clearInterval(id);
+    setColorBg("white");
   };
 
   const playClickHandler = (event) => {
@@ -38,8 +44,6 @@ function App() {
 
       if (+timeRef.current.innerHTML > 0 && globalIndex !== rows.length) {
         currentTime = +timeRef.current.innerHTML;
-        console.log("This is working");
-        console.log(currentTime);
       } else currentTime = 0;
 
       if (!currentRow) {
@@ -63,13 +67,10 @@ function App() {
             setCurrentRow(rows[index]);
           } else {
             setColorBg("White");
-            console.log(
-              "This seems to be working, currently paused = ",
-              paused
-            );
             setPaused(true);
             setCurrentRow();
             globalIndex = index;
+            clearInterval(id);
           }
         }
       }, 10);
@@ -77,14 +78,17 @@ function App() {
     } else {
       clearInterval(id);
       setPaused(true);
-      globalIndex = rows.length - 1;
+      globalIndex = 0;
     }
   };
 
   return (
     <>
       <div className="row">
-        <div className="column" style={{ background: `${colorBg}` }}>
+        <div
+          className="column"
+          style={{ background: `${colorBg}`, height: `${height}px` }}
+        >
           <div id="box" ref={timeRef}>
             {timeNow}
           </div>
@@ -110,11 +114,18 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              <ColorDisplay items={rows} active={currentRow} />
+              <ColorDisplay
+                items={rows}
+                active={currentRow}
+                divHeight={setHeight}
+              />
             </tbody>
           </table>
         </div>
-        <div className="column" style={{ background: `${colorBg}` }}>
+        <div
+          className="column"
+          style={{ background: `${colorBg}`, height: `${height}px` }}
+        >
           <div id="box" ref={timeRef}>
             {timeNow}
           </div>

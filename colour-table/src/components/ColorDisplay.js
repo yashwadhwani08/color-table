@@ -3,6 +3,12 @@ import React from "react";
 
 // let start = Date.now();
 const ColorDisplay = (props) => {
+  try {
+    let x = document.getElementsByClassName("column")[1].offsetHeight;
+    if (x >= 948) props.divHeight(x);
+    else props.divHeight(948);
+  } catch (e) {}
+
   const colorTable = {
     Red: "255, 0, 0, ",
     Blue: "0, 0, 255, ",
@@ -11,18 +17,6 @@ const ColorDisplay = (props) => {
     Green: "0, 128, 0, ",
     Yellow: "255, 255, 0, ",
   };
-
-  // const stateChangeHandler = (timeVal) => {
-  //   // let elapsedTimeNow = new Date();
-  //   // elapsedTimeNow.setMilliseconds(123);
-  //   elapsedTimeNow.setMilliseconds(elapsedTimeNow.getMilliseconds() + timeVal);
-  //   console.log(elapsedTimeNow.getTime());
-  //   while (elapsedTimeNow - start > 0) {
-  //     setIsActive(true);
-  //     elapsedTimeNow--;
-  //   }
-  //   setIsActive(false);
-  // };
 
   return props.items.map((item) => {
     let color = item.color;
@@ -37,9 +31,7 @@ const ColorDisplay = (props) => {
           background:
             props.active && props.active.id === item.id
               ? `rgba(${result})`
-              : // ? // ? `rgba(${result})`
-                // `rgba(${("0,0,0,0".replace('"'), "")})`
-                "white",
+              : "white",
         }}
       >
         <td>{props.active && props.active.id === item.id && "=>"}</td>

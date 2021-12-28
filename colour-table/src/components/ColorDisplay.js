@@ -1,13 +1,12 @@
 import React from "react";
 // import styles from "ColorDisplaymodule.css";
 
-// let start = Date.now();
 const ColorDisplay = (props) => {
-  try {
-    let x = document.getElementsByClassName("column")[1].offsetHeight;
-    if (x >= 948) props.divHeight(x);
-    else props.divHeight(948);
-  } catch (e) {}
+  // try {
+  //   let x = document.getElementsByClassName("column")[1].offsetHeight;
+  //   if (x >= 948) props.divHeight(x);
+  //   else props.divHeight(948);
+  // } catch (e) {}
 
   const colorTable = {
     Red: "255, 0, 0, ",

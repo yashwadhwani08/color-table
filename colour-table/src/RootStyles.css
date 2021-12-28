@@ -21,6 +21,10 @@
   /* min-height: 948px; */
 }
 
+.column.column-center {
+  overflow: auto;
+}
+
 .row:after {
   content: "";
   display: table;

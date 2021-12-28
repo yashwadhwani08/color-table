@@ -13,28 +13,33 @@ function App() {
   const colorArr = ["Red", "Blue", "Green", "Purple", "Orange", "Yellow"];
   const inputRef = useRef();
   const timeRef = useRef();
-  const [height, setHeight] = useState(948);
+  // const [height, setHeight] = useState(window.innerHeight);
+  const height = window.innerHeight;
   const addClickHandler = (event) => {
-    let n = inputRef.current.value;
-    if (n.trim().length !== 0 && +n > 0) {
-      let arr = [];
-      for (let i = 0; i < n; i++) {
-        arr.push({
-          id: "e" + i + Math.random().toString(),
-          time: Math.floor(Math.random() * (250 + 1 - 10) + 10) * 10,
-          color: colorArr[Math.floor(Math.random() * colorArr.length)],
-          shade: Math.random().toFixed(1),
-        });
+    if (event.keyCode === 13) {
+      let n = inputRef.current.value;
+      if (n.trim().length !== 0 && +n > 0) {
+        let arr = [];
+        for (let i = 0; i < n; i++) {
+          arr.push({
+            id: "e" + i + Math.random().toString(),
+            time: Math.floor(Math.random() * (250 + 1 - 10) + 10) * 10,
+            color: colorArr[Math.floor(Math.random() * colorArr.length)],
+            shade: Math.random().toFixed(1),
+          });
+        }
+        setRows(arr);
       }
-      setRows(arr);
+      // inputRef.current.value = "";
+      setTimeNow();
+      globalIndex = 0;
+      setCurrentRow();
+      setPaused(true);
+      clearInterval(id);
+      setColorBg("white");
+      // if (35 * n + 95 > window.innerHeight) setHeight(35 * n + 95);
+      // else setHeight(window.innerHeight);
     }
-    inputRef.current.value = "";
-    setTimeNow();
-    globalIndex = 0;
-    setCurrentRow();
-    setPaused(true);
-    clearInterval(id);
-    setColorBg("white");
   };
 
   const playClickHandler = (event) => {
@@ -93,17 +98,34 @@ function App() {
             {timeNow}
           </div>
         </div>
-        <div className="column">
+        <div className="column column-center" style={{ height: `${height}px` }}>
           <label htmlFor="noOfRows" style={{ marginRight: "4px" }}>
             Enter the number of rows you need :
           </label>
-          <input id="noOfRows" type="number" min="1" step="1" ref={inputRef} />
-          <button style={{ marginLeft: "4px" }} onClick={addClickHandler}>
+          <input
+            id="noOfRows"
+            type="number"
+            min="1"
+            step="1"
+            ref={inputRef}
+            onKeyUp={addClickHandler}
+          />
+          {/* <button style={{ marginLeft: "4px" }} onClick={addClickHandler}>
             Add
-          </button>
-          <button style={{ marginLeft: "4px" }} onClick={playClickHandler}>
-            {paused ? "▶️" : "⏸"}
-          </button>
+          </button> */}
+          {rows.length > 0 ? (
+            <button style={{ marginLeft: "4px" }} onClick={playClickHandler}>
+              {paused ? "▶️" : "⏸"}
+            </button>
+          ) : (
+            <button
+              style={{ marginLeft: "4px" }}
+              onClick={playClickHandler}
+              disabled
+            >
+              {paused ? "▶️" : "⏸"}
+            </button>
+          )}
           <table id="table-styling">
             <thead>
               <tr>
@@ -117,7 +139,7 @@ function App() {
               <ColorDisplay
                 items={rows}
                 active={currentRow}
-                divHeight={setHeight}
+                // divHeight={setHeight}
               />
             </tbody>
           </table>

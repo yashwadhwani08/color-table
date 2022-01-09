@@ -1,13 +1,42 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
+import $ from "jquery";
 import "./VideoList.css";
 
 const VideoList = (props) => {
+  const newArr = [...props.videos];
+  useEffect(() => {
+    var ytApiKey = "AIzaSyCbPEIO-doFWqVa08tb_y3DzfPt2HQChX0";   
+    newArr.forEach((element) => {
+      let vidId = element.youtubeLink.split("v=")[1].substring(0, 11);
+      $.get(
+        "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" +
+          vidId +
+          "&key=" +
+          ytApiKey,
+        function (data) {
+          element["name"] = data.items[0].snippet.title;
+        }
+      );
+    });
+  }, [props.videos.length]);
+
   if (props.videos.length > 0) {
-    const listItems = props.videos.map((element) => {
+    const listItems = newArr.map((element, i) => {
       return (
-        <tr key={Math.random()}>
-          <td>{element.youtubeLink}</td>
-          <td>{element.youtubeLink}</td>
+        <tr key={element.id}>
+          <td>{element.name}</td>
+          <td>
+            <Link
+              to={{
+                pathname: `/play-video/${element.youtubeLink
+                  .split("v=")[1]
+                  .substring(0, 11)}`,
+              }}
+            >
+              {element.youtubeLink}
+            </Link>
+          </td>
         </tr>
       );
     });
@@ -15,8 +44,8 @@ const VideoList = (props) => {
       <table>
         <thead>
           <tr>
+            <th>YouTube Video Title</th>
             <th>YouTube Video Link</th>
-            <th>Start from middle</th>
           </tr>
         </thead>
         <tbody>{listItems}</tbody>

@@ -2,7 +2,12 @@ import React, { useState, useRef } from "react";
 import "./Home.css";
 
 const Home = (props) => {
-  const [data, setData] = useState("No data available currently");
+  const [data, setData] = useState();
+  // if (props.video && props.videos.length === 0) setData("No data available currently");
+  // else
+  //   setData(
+  //     "To check list of videos added, click Video List in navigation bar!"
+  //   );
   const inputRef = useRef();
   const submitHandler = (event) => {
     event.preventDefault();
@@ -10,6 +15,7 @@ const Home = (props) => {
       const linkVal = inputRef.current.value;
       props.submit({
         youtubeLink: linkVal,
+        id: Math.random().toString(),
       });
       setData("Successfully added!");
       inputRef.current.value = "";

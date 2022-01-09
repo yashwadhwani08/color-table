@@ -7,6 +7,7 @@ const Navbar = () => {
     <div className="topnav" id="myTopnav">
       <NavLink to="/home">Home</NavLink>{" "}
       <NavLink to="/video-list">Video List</NavLink>
+      {/* <NavLink to="/video-list/play-video/:vidID">Play Video</NavLink> */}
     </div>
   );
 };

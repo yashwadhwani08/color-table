@@ -2,20 +2,25 @@ import React, { useState } from "react";
 import Navbar from "./components/UI/Navbar";
 import Home from "./components/Home";
 import VideoList from "./components/VideoList";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import PlayVideo from "./components/PlayVideo";
 
 function App() {
-  const [videos, setVideos] = useState([]);
+  const [videos, setVideos] = useState([]);  
   const submitHandler = (obj) => {
     let vid;
     if (videos.length > 0) vid = [...videos, obj];
     else vid = [obj];
     setVideos((prev) => vid);
   };
+  
   return (
     <>
-      {/* <Home submit={submitHandler} /> */}
-      {/* <Home /> */}
       <Router>
         <div>
           <Navbar />
@@ -25,16 +30,20 @@ function App() {
             exact
             path="/video-list"
             element={<VideoList videos={videos} />}
-          >
-            {/* <VideoList /> */}
+          />  
+          <Route path="/play-video/:vidID" element={<PlayVideo videos={videos}/>}></Route>
+          <Route
+            exact
+            path="/"            
+            element={<Navigate replace to="/home" />}
+          />
+          <Route
+             exact
+            path="/home"
+            element={<Home submit={submitHandler} />}
+          >            
           </Route>
-
-          <Route exact path="/" element={<Home submit={submitHandler} />}>
-            {/* <Home /> */}
-          </Route>
-          <Route exact path="/home" element={<Home submit={submitHandler} />}>
-            {/* <Home /> */}
-          </Route>
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>
     </>

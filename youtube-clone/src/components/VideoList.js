@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import $ from "jquery";
 import "./VideoList.css";
 
 const VideoList = (props) => {
-  const newArr = [...props.videos];
+  // const newArr = [...props.videos];
+  const newArr = props.videos;
   useEffect(() => {
     var ytApiKey = "AIzaSyCbPEIO-doFWqVa08tb_y3DzfPt2HQChX0";   
     newArr.forEach((element) => {
@@ -19,7 +20,8 @@ const VideoList = (props) => {
         }
       );
     });
-  }, [props.videos.length]);
+  }, [newArr]);
+  useEffect(()=>{console.log("Yeah it is working!")},[]);
 
   if (props.videos.length > 0) {
     const listItems = newArr.map((element, i) => {

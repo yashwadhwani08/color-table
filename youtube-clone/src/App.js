@@ -11,14 +11,27 @@ import {
 import PlayVideo from "./components/PlayVideo";
 
 function App() {
-  const [videos, setVideos] = useState([]);  
-  const submitHandler = (obj) => {
+  const [videos, setVideos] = useState([]);
+  const submitHandler = async (obj) => {
     let vid;
-    if (videos.length > 0) vid = [...videos, obj];
-    else vid = [obj];
+    let vidId = obj.youtubeLink.split("v=")[1].substring(0, 11);
+    const ytApiKey = process.env.REACT_APP_YOUTUBE_API
+    const data = await fetch(
+      "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" +
+        vidId +
+        "&key=" +
+        ytApiKey
+    );
+    const response = await data.json();
+    obj["name"] = response.items[0].snippet.title;
+    if (videos.length > 0) {
+      vid = [...videos, obj];
+    } else {
+      vid = [obj];
+    }
     setVideos((prev) => vid);
   };
-  
+
   return (
     <>
       <Router>
@@ -30,19 +43,17 @@ function App() {
             exact
             path="/video-list"
             element={<VideoList videos={videos} />}
-          />  
-          <Route path="/play-video/:vidID" element={<PlayVideo videos={videos}/>}></Route>
-          <Route
-            exact
-            path="/"            
-            element={<Navigate replace to="/home" />}
           />
           <Route
-             exact
+            path="/play-video/:vidID"
+            element={<PlayVideo videos={videos} />}
+          ></Route>
+          <Route exact path="/" element={<Navigate replace to="/home" />} />
+          <Route
+            exact
             path="/home"
-            element={<Home submit={submitHandler} />}
-          >            
-          </Route>
+            element={<Home videos={videos} submit={submitHandler} />}
+          ></Route>
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>

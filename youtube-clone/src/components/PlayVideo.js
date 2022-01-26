@@ -4,18 +4,17 @@ import { useParams } from "react-router-dom";
 
 const PlayVideo = (props) => {
   const params = useParams();
-  console.log(props, "Hiiii");
-  console.log(params);
-  let src = "https://www.youtube.com/embed/" + `${params.vidID}`;
+  let src = `https://www.youtube.com/embed/${params.vidID}`;
   let list = null;
   if (props.videos) {
-    list = props.videos.map((element) => {
+    list = props.videos.filter((element) => element.id !== params.vidID);
+    list = list.map((element) => {
       let srcSmall =
         "https://www.youtube.com/embed/" +
         `${element.youtubeLink.split("v=")[1].substring(0, 11)}`;
       return (
         <iframe
-          key={Math.random()}
+          key={element.id}
           width="500"
           height="250"
           src={srcSmall}
@@ -27,17 +26,9 @@ const PlayVideo = (props) => {
       );
     });
   }
-  // console.log(props.match.params.vidID);
   return (
     <>
       <div style={{ marginLeft: "10px", marginRight: "10px" }}>
-        {/* <h1>URL params is {params.vidID}</h1> */}
-        {/* <video controls width="1280" height="720" style={{ marginTop: "300" }} title="YouTube video player">
-        <source src="https://www.youtube.com/watch?v=6b9v8oUR5ro" title="YouTube video player"/>
-        <source src={src} type="video/mp4" />
-        Sorry, your browser doesn't support embedded videos.
-      </video> */}
-
         <iframe
           width="100%"
           height="600"

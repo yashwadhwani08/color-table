@@ -2,26 +2,41 @@ import React, { useState, useRef } from "react";
 import "./Home.css";
 
 const Home = (props) => {
-  const [data, setData] = useState();
-  // if (props.video && props.videos.length === 0) setData("No data available currently");
-  // else
-  //   setData(
-  //     "To check list of videos added, click Video List in navigation bar!"
-  //   );
+  const [message, setMessage] = useState();
   const inputRef = useRef();
-  const submitHandler = (event) => {
+  const submitHandler = async (event) => {
     event.preventDefault();
-    if (inputRef.current.value) {
+    if (
+      inputRef.current.value &&
+      inputRef.current.value.includes("www.youtube.com/") &&
+      inputRef.current.value.includes("v=")
+    ) {
       const linkVal = inputRef.current.value;
-      props.submit({
-        youtubeLink: linkVal,
-        id: Math.random().toString(),
-      });
-      setData("Successfully added!");
-      inputRef.current.value = "";
+      const id = linkVal.split("v=")[1].substring(0, 11);
+      const response = await fetch(
+        "http://img.youtube.com/vi/" + id + "/mqdefault.jpg"
+      );
+
+      if (response.status === 200) {
+        if (props.videos.length > 0) {
+          if (props.videos.some((item) => item.id === id)) {
+            setMessage("A video with the same link already exists.");
+            inputRef.current.value = "";
+            return;
+          }
+        }
+        props.submit({
+          youtubeLink: linkVal,
+          id: id,
+        });
+        setMessage("Successfully added!");
+      } else {
+        setMessage("Seems like the video id is invalid");
+      }
     } else {
-      setData("Please give valid input!");
+      setMessage("Please give valid input!");
     }
+    inputRef.current.value = "";
   };
   return (
     <>
@@ -35,19 +50,14 @@ const Home = (props) => {
         onSubmit={submitHandler}
       >
         <label htmlFor="youtube-link">Enter the Youtube Link here: </label>
-        <input
-          type="url"
-          ref={inputRef}
-          //   onChange={() => setData()}
-          onFocus={() => setData()}
-        />
+        <input type="url" ref={inputRef} onFocus={() => setMessage("")} />
         <button type="submit">Submit</button>
       </form>
-      {data && (
+      {message && (
         <div
           style={{ marginLeft: "auto", marginRight: "auto", width: "500px" }}
         >
-          {data}
+          {message}
         </div>
       )}
     </>
